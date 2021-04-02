@@ -1,7 +1,17 @@
 // Some JS {Bloated} for startpage.
 
-let query_url = "https://www.google.com/search?q="
+const lsLatest = {
+    get: function() {
+        let latestSECode = localStorage.getItem('latest')
+        return latestSECode
+    },
+    set: function(value) {
+        localStorage.setItem('latest', value)
+    }
+}
 
+
+let query_url = searchEngines[lsLatest.get()]?.url || 'https://www.google.com/search?q='
 let search = document.querySelector("#query")
 let logo = document.querySelector("#search_logo")
 let autoComplete = document.querySelector("#auto-complete")
@@ -27,8 +37,6 @@ const engineHtmlGenerator = (query, searchEngines) => {
     return engineTemplate
 }
 
-
-
 search.focus()
 search.addEventListener("keydown", (e) => {
     if (e.code == "Tab") {
@@ -47,11 +55,19 @@ search.addEventListener("keyup", (e) => {
         window.location = query_url
     }
     if (e.code == "Tab") {
-        if (Object.keys(searchEngines).find((value) => value == query.slice(1))) {
-            logo.innerHTML = searchEngines[query.slice(1)].icon
-            query_url = searchEngines[query.slice(1)].url
+        let code = query.slice(1)
+        let engineData = searchEngines[code]
+
+        if (engineData) {
+            lsLatest.set(query.slice(1))
+            logo.innerHTML = engineData.icon
+            query_url = engineData.url
             search.value = ""
             autoComplete.innerHTML = ""
         }
     }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    logo.innerHTML = searchEngines[lsLatest.get()].icon
 })
