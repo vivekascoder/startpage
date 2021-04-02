@@ -59,6 +59,8 @@ search.addEventListener("keyup", (e) => {
         currentCache.push(search.value)
         currentCache = JSON.stringify(currentCache)
         ls.set(`cache_${currentCode}`, currentCache)
+
+        window.location = query_url
     }
     if (e.code == "Tab") {
         let code = query.slice(1)
