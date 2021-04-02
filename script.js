@@ -1,22 +1,22 @@
 // Some JS {Bloated} for startpage.
 
-var query_url = "https://www.google.com/search?q="
+let query_url = "https://www.google.com/search?q="
 
-var search = document.querySelector("#query")
-var logo = document.querySelector("#search_logo")
-var autoComplete = document.querySelector("#auto-complete")
-var query = ""
+let search = document.querySelector("#query")
+let logo = document.querySelector("#search_logo")
+let autoComplete = document.querySelector("#auto-complete")
+let query = ""
 
 
-function engineHtmlGenerator(query, searchEngines) {
-    var engineTemplate = ""
-    var filteredItems = Object.keys(searchEngines).filter((value) => {
+const engineHtmlGenerator = (query, searchEngines) => {
+    let engineTemplate = ""
+    let filteredItems = Object.keys(searchEngines).filter((value) => {
         return value.startsWith(query.slice(1))
     })
 
-    for (var i = 0; i < filteredItems.length; i++) {
-        var key = filteredItems[i]
-        var restString = (":" + key).replace(query, "")
+    for (let i = 0; i < filteredItems.length; i++) {
+        let key = filteredItems[i]
+        let restString = (":" + key).replace(query, "")
         engineTemplate += `
         <div class="engine">
             <span class="logo">${searchEngines[key].icon}</span>
