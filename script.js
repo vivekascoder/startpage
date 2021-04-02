@@ -14,8 +14,32 @@ var searchEngines = {
 }
 var search = document.querySelector("#query")
 var logo = document.querySelector("#search_logo")
+var autoComplete = document.querySelector("#auto-complete")
 var query = ""
 
+
+function engineHtmlGenerator(query, searchEngines) {
+    var engineTemplate = ""
+    var filteredItems = Object.keys(searchEngines).filter((value) => {
+        return value.startsWith(query.slice(1))
+    })
+    
+    for (var i=0; i<filteredItems.length; i++) {
+        var key = filteredItems[i]
+        var restString = (":" + key).replace(query, "")
+        engineTemplate += `
+        <div class="engine">
+            <span class="logo">${searchEngines[key].icon}</span>
+            <span class="name">[<span class="selected">${query}</span>${restString}] ${searchEngines[key].url}</span>
+        </div>
+        `
+    }
+    return engineTemplate
+}
+
+
+
+search.focus()
 document.addEventListener("keydown", (e) => {
     if (e.code == "Tab") {
         e.preventDefault()
@@ -24,7 +48,12 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", (e) => {
     query = search.value
-    if (e.code == "Enter") {
+    autoComplete.innerHTML = ""
+    if (search.value.startsWith(":") && !search.value.match(" ")) {
+        console.log("Fired")
+        autoComplete.innerHTML = engineHtmlGenerator(search.value, searchEngines)
+    }
+    if (e.code == "Enter" && search.value) {
         query_url += search.value.replaceAll(" ", "+")
         window.location = query_url
     }
@@ -33,6 +62,7 @@ document.addEventListener("keyup", (e) => {
             logo.innerHTML = searchEngines[query.slice(1)].icon
             query_url = searchEngines[query.slice(1)].url
             search.value = ""
+            autoComplete.innerHTML = ""
         }
     }
 })
