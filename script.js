@@ -30,17 +30,16 @@ const engineHtmlGenerator = (query, searchEngines) => {
 
 
 search.focus()
-document.addEventListener("keydown", (e) => {
+search.addEventListener("keydown", (e) => {
     if (e.code == "Tab") {
         e.preventDefault()
     }
 })
 
-document.addEventListener("keyup", (e) => {
+search.addEventListener("keyup", (e) => {
     query = search.value
     autoComplete.innerHTML = ""
     if (search.value.startsWith(":") && !search.value.match(" ")) {
-        console.log("Fired")
         autoComplete.innerHTML = engineHtmlGenerator(search.value, searchEngines)
     }
     if (e.code == "Enter" && search.value) {
