@@ -1,17 +1,17 @@
 // Some JS {Bloated} for startpage.
 
-const lsLatest = {
-    get: function() {
-        let latestSECode = localStorage.getItem('latest')
+const ls = {
+    get: function(key) {
+        let latestSECode = localStorage.getItem(key)
         return latestSECode
     },
-    set: function(value) {
-        localStorage.setItem('latest', value)
+    set: function(key, value) {
+        localStorage.setItem(key, value)
     }
 }
 
 
-let query_url = searchEngines[lsLatest.get()]?.url || 'https://www.google.com/search?q='
+let query_url
 let search = document.querySelector("#query")
 let logo = document.querySelector("#search_logo")
 let autoComplete = document.querySelector("#auto-complete")
@@ -59,7 +59,7 @@ search.addEventListener("keyup", (e) => {
         let engineData = searchEngines[code]
 
         if (engineData) {
-            lsLatest.set(query.slice(1))
+            ls.set('latest', query.slice(1))
             logo.innerHTML = engineData.icon
             query_url = engineData.url
             search.value = ""
@@ -69,5 +69,11 @@ search.addEventListener("keyup", (e) => {
 })
 
 document.addEventListener('DOMContentLoaded', () => {
-    logo.innerHTML = searchEngines[lsLatest.get()].icon
+    let latestEngineData = searchEngines[ls.get('latest')]
+    let defaultEngineData = searchEngines[ls.get('default')]
+
+    let firstEngine = defaultEngineData || latestEngineData
+
+    query_url = firstEngine?.url || 'https://www.google.com/search?q='
+    logo.innerHTML = firstEngine.icon
 })
