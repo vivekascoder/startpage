@@ -16,7 +16,7 @@ let search = document.querySelector("#query")
 let logo = document.querySelector("#search_logo")
 let autoComplete = document.querySelector("#auto-complete")
 let query = ""
-
+let currentCode = ""
 
 const engineHtmlGenerator = (query, searchEngines) => {
     let engineTemplate = ""
@@ -50,12 +50,19 @@ search.addEventListener("keyup", (e) => {
     if (search.value.startsWith(":") && !search.value.match(" ")) {
         autoComplete.innerHTML = engineHtmlGenerator(search.value, searchEngines)
     }
+
     if (e.code == "Enter" && search.value) {
         query_url += search.value.replaceAll(" ", "+")
-        window.location = query_url
+
+        let currentCache = JSON.parse(ls.get(`cache_${currentCode}`))
+        if(!currentCache) currentCache = []
+        currentCache.push(search.value)
+        currentCache = JSON.stringify(currentCache)
+        ls.set(`cache_${currentCode}`, currentCache)
     }
     if (e.code == "Tab") {
         let code = query.slice(1)
+        currentCode = code
         let engineData = searchEngines[code]
 
         if (engineData) {
@@ -72,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let latestEngineData = searchEngines[ls.get('latest')]
     let defaultEngineData = searchEngines[ls.get('default')]
 
+    currentCode = ls.get('default') || ls.get('latest')
     let firstEngine = defaultEngineData || latestEngineData
 
     query_url = firstEngine?.url || 'https://www.google.com/search?q='
