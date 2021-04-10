@@ -30,7 +30,9 @@ const engineHtmlGenerator = (query, searchEngines) => {
         engineTemplate += `
         <div class="engine">
             <span class="logo">${searchEngines[key].icon}</span>
-            <span class="name">[<span class="selected">${query}</span>${restString}] ${searchEngines[key].url}</span>
+            <span class="name">[<span class="selected">
+				${query}</span>${restString}] ${searchEngines[key].url}
+			</span>
         </div>
         `
     }
@@ -49,6 +51,7 @@ search.addEventListener("keyup", (e) => {
     autoComplete.innerHTML = ""
     if (search.value.startsWith(":") && !search.value.match(" ")) {
         autoComplete.innerHTML = engineHtmlGenerator(search.value, searchEngines)
+		autoComplete.style.display = "block";
     }
 
     if (e.code == "Enter" && search.value) {
@@ -67,6 +70,11 @@ search.addEventListener("keyup", (e) => {
         currentCode = code
         let engineData = searchEngines[code]
 
+		autoComplete.style.display = "none";
+		let matchingKeys = Object.keys(searchEngines).filter( (key) => key.startsWith(code) )
+		if (matchingKeys.length == 1) {
+			engineData = searchEngines[matchingKeys[0]]
+		}
         if (engineData) {
             ls.set('latest', query.slice(1))
             logo.innerHTML = engineData.icon
