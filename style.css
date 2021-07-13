@@ -141,3 +141,8 @@ span.selected{
     color: var(--background);
     border-radius: 2px;
 }
+
+.engine-selected {
+	background: var(--background-alt);
+	overflow: hidden;
+}

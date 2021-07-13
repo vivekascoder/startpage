@@ -16,7 +16,11 @@ let search = document.querySelector("#query")
 let logo = document.querySelector("#search_logo")
 let autoComplete = document.querySelector("#auto-complete")
 let query = ""
+query.
 let currentCode = ""
+let engineIndex = 0
+let totalSelectedEngines = Object.keys(searchEngines).length
+let currentFilteredEngnes = searchEngines
 
 const engineHtmlGenerator = (query, searchEngines) => {
     let engineTemplate = ""
@@ -35,9 +39,11 @@ const engineHtmlGenerator = (query, searchEngines) => {
 			</span>
         </div>
         `
+
     }
-    return engineTemplate
+    return [engineTemplate, filteredItems.length]
 }
+
 
 search.focus()
 search.addEventListener("keydown", (e) => {
@@ -50,20 +56,42 @@ search.addEventListener("keyup", (e) => {
     query = search.value
     autoComplete.innerHTML = ""
     if (search.value.startsWith(":") && !search.value.match(" ")) {
-        autoComplete.innerHTML = engineHtmlGenerator(search.value, searchEngines)
+        currentFilteredEngnes = Object.filter()
+		let data = engineHtmlGenerator(search.value, searchEngines)
+        autoComplete.innerHTML = data[0]
+        totalSelectedEngines = data[1]
+		// Will fill the innerHTML of the div.
+		totalSelectedEngines = data[1]
+        autoComplete.innerHTML += `
+        <style>
+             .engine:nth-child(${engineIndex+1}) {
+                background: var(--background-alt);
+                overflow: hidden;
+            }
+        </style>
+        `
 		autoComplete.style.display = "block";
     }
 
+
     if (e.code == "Enter" && search.value) {
-        query_url += search.value.replaceAll(" ", "+")
 
-        let currentCache = JSON.parse(ls.get(`cache_${currentCode}`))
-        if(!currentCache) currentCache = []
-        currentCache.push(search.value)
-        currentCache = JSON.stringify(currentCache)
-        ls.set(`cache_${currentCode}`, currentCache)
+        if (search.value.startsWith(":") && !search.value.match(" ")) {
+            // Object.keys()
+            engineData = searchEngines[engineIndex]
+            console.log(engineData)
+        }
+        else {
+            query_url += search.value.replaceAll(" ", "+")
 
-        window.location = query_url
+            let currentCache = JSON.parse(ls.get(`cache_${currentCode}`))
+            if(!currentCache) currentCache = []
+            currentCache.push(search.value)
+            currentCache = JSON.stringify(currentCache)
+            ls.set(`cache_${currentCode}`, currentCache)
+
+            window.location = query_url
+        }
     }
     if (e.code == "Tab") {
         let code = query.slice(1)
@@ -71,7 +99,9 @@ search.addEventListener("keyup", (e) => {
         let engineData = searchEngines[code]
 
 		autoComplete.style.display = "none";
-		let matchingKeys = Object.keys(searchEngines).filter( (key) => key.startsWith(code) )
+		let matchingKeys = Object.keys(searchEngines)
+            .filter( (key) => key.startsWith(code) )
+
 		if (matchingKeys.length == 1) {
 			engineData = searchEngines[matchingKeys[0]]
 		}
@@ -83,6 +113,22 @@ search.addEventListener("keyup", (e) => {
             autoComplete.innerHTML = ""
         }
     }
+	if (e.code == "ArrowDown") {
+		if (engineIndex < totalSelectedEngines) {
+			engineIndex ++;	
+		}
+		else if (engineIndex == totalSelectedEngines) {
+			engineIndex = 0;
+		}
+	}
+	if (e.code == "ArrowUp") {
+		if (engineIndex > 0) {
+			engineIndex --;	
+		}
+		else if (engineIndex == 0) {
+			engineIndex = totalSelectedEngines;
+		}
+	}
 })
 
 document.addEventListener('DOMContentLoaded', () => {
